@@ -7,12 +7,19 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
+# include <stdio.h>
+# include <errno.h>
 # include "libft.h"
+# include <sys/wait.h>
 
 typedef struct s_info
 {
 	char	*file1;
 	char	*file2;
+	int		fd1;
+	int		fd2;
+	int		in;
+	int		out;
 	char	**cmds;
 }					t_info;
 

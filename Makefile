@@ -10,7 +10,7 @@ SRCS_UTILS 	=   $(shell ls ./utils/*.c)
 
 SRCS		=   ${SRCS_UTILS} pipex.c
 
-CFLAGS		=	-Wall -Wextra -Werror
+CFLAGS		=	
 
 RM			=	rm -rf
 
@@ -25,10 +25,11 @@ all:		run_libft $(NAME)
 $(NAME):	${OBJS} $(HEADER) $(LIBFT)
 			$(CC) -o $(NAME) ${OBJS} $(LIBFT)
 
-run_libft:	@make -C $(PATH_LIB)
+run_libft:	
+			@make -C $(PATH_LIB)
 
 %.o: 		%.c	
-			$(CC) $(CFLAGS) -I./ -c $< -o $@
+			$(CC) $(CFLAGS) -I./ -I./libft/ -c $< -o $@
 
 clean:
 			$(RM) ${OBJS}
