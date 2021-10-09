@@ -10,7 +10,7 @@ SRCS_UTILS 	=   $(shell ls ./utils/*.c)
 
 SRCS		=   ${SRCS_UTILS} pipex.c
 
-CFLAGS		=	
+CFLAGS		=	-Wall -Wextra -Werror
 
 RM			=	rm -rf
 
@@ -18,7 +18,7 @@ CC			=   gcc
 
 OBJS		=	$(SRCS:%.c=%.o)
 
-.PHONY:		all clean fclean re ${NAME} run_libft
+.PHONY:		all clean fclean re run_libft
 
 all:		run_libft $(NAME)
 

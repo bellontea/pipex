@@ -11,11 +11,12 @@
 # include <errno.h>
 # include "libft.h"
 # include <sys/wait.h>
+# include <string.h>
+
+#define PROGRAM_NAME "pipex"
 
 typedef struct s_info
 {
-	char	*file1;
-	char	*file2;
 	int		fd1;
 	int		fd2;
 	int		in;
