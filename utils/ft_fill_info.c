@@ -4,9 +4,10 @@ void	ft_fill_info(t_info *info, char **argv, int argc)
 {
 	int i;
 
-	info->cmds = malloc(sizeof(char*) * (argc - 2));
+	info->size = argc - 3;
+	info->cmds = malloc(sizeof(char*) * (info->size + 1));
 	i = 0;
-	while (i < argc - 3)
+	while (i < info->size)
 	{
 		
 		info->cmds[i] = argv[i + 2];

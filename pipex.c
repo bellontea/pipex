@@ -84,65 +84,75 @@ void	ft_error(t_info info, int i)
 	ft_putstr_fd("\n", 2);
 }
 
+int ft_open_files(t_info *info, int argc, char **argv)
+{
+	info->fd1 = open(argv[1], O_RDONLY);
+	if (info->fd1 < 0)
+		perror(argv[1]);
+	info->fd2 = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	if (info->fd2 < 0)
+		perror(argv[argc - 1]);
+	return (0);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	int	end[2];
+	int	*end;
 	t_info	info;
 	pid_t	*child;
 	char	**all_paths;
 	int status;
+	int i;
 
-	info.fd1 = open(argv[1], O_RDONLY);
-	if (info.fd1 < 0)
-		perror(argv[1]);
-	info.fd2 = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
-	if (info.fd2 < 0)
-		perror(argv[argc - 1]);
+	ft_open_files(&info, argc, argv);
 	ft_fill_info(&info, argv, argc);
 	all_paths = ft_get_paths(envp);
 	child = malloc(sizeof(pid_t) * (argc - 3));
-	pipe(end);
-	child[0] = fork();
-	if (child[0] < 0)
+	end = malloc(sizeof(int) * (info.size * 2 - 1));
+	i = 0;
+	while (i < info.size - 1)
 	{
-		perror("Fork: ");
-		return (1);
+		pipe(end + i * 2);
+		child[i] = fork();
+		if (child[i] == 0)
+		{
+			if (i == 0)
+				info.in = info.fd1;
+			else
+				info.in = end[i];
+			info.out = end[i + 1];
+			if (i - 3 >= 0)
+				close(end[i - 3]);
+			if (ft_execute_cmd(info, i, all_paths, envp) == 1)
+				ft_error(info, i);
+			close(info.fd1);
+    		close(end[i + 1]);
+			return (0);
+		}
+		child[i + 1] = fork();
+		if (child[i + 1] == 0)
+		{
+			info.in = end[i];
+			if (i == info.size - 2)
+				info.out = info.fd2;
+			else
+				info.out = end[i + 3];
+    		close(end[i + 1]);
+			if (ft_execute_cmd(info, i, all_paths, envp) == 1)
+				ft_error(info, i);
+			close(info.fd2);
+			close(end[i]);
+			return (0);
+		}
+		i++;
 	}
-	if (child[0] == 0)
+	while (i < info.size - 1)
 	{
-		info.in = info.fd1;
-		info.out = end[1];
-		if (ft_execute_cmd(info, 0, all_paths, envp) == 1)
-			ft_error(info, 0);
-		close(info.fd1);
-    	close(end[1]);
-		close(end[0]);
-		return (0);
-//		close(end[0]);
+		waitpid(child[i], &status, 0);
+		i++;
 	}
-	child[1] = fork();
-	if (child[1] < 0)
-    {
-		perror("Fork: ");
-		return (1);
-	}
-	if (child[1] == 0)
-	{
-		info.in = end[0];
-		info.out = info.fd2;
-    	close(end[1]);
-		if (ft_execute_cmd(info, 1, all_paths, envp) == 1)
-			ft_error(info, 1);
-		close(info.fd2);
-		close(end[0]);
-		return (0);
-//		close(end[0]);
-	}
-	close(end[0]);
-    close(end[1]);
-	waitpid(child[0], &status, 0);
-	waitpid(child[1], &status, 0);
 	free(child);
+	free(end);
 	free(info.cmds);
 	free_array(all_paths);
 	return (0);

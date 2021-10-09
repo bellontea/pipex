@@ -22,6 +22,7 @@ typedef struct s_info
 	int		in;
 	int		out;
 	char	**cmds;
+	int 	size;
 }					t_info;
 
 void	ft_fill_info(t_info *info, char **argv, int argc);
