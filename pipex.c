@@ -146,7 +146,7 @@ int	main(int argc, char **argv, char **envp)
 		if (i > 0)
 		{
 			close(end[i * 2 - 1]);
-			close(end[i * 2 + 1]);
+			close(end[i * 2 - 2]);
 		}
 		else
 			close(info.fd1);
