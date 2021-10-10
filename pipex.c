@@ -95,6 +95,22 @@ int ft_open_files(t_info *info, int argc, char **argv)
 	return (0);
 }
 
+void pipex(t_info *info, int i, int *end)
+{
+	if (i - 3 < 0)
+		info->in = info->fd1;
+	else
+		info->in = end[i - 3];
+	if ((i - 1) / 2 == info->size - 1)
+		info->out = info->fd2;
+	else
+		info->out = end[i];
+	if (i - 2 >= 0)
+		close(end[i - 2]);
+	if ((i - 1) / 2 < info->size - 1)
+		close(end[i - 1]);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	int	*end;
@@ -104,53 +120,56 @@ int	main(int argc, char **argv, char **envp)
 	int status;
 	int i;
 
+	status = 0;
 	ft_open_files(&info, argc, argv);
 	ft_fill_info(&info, argv, argc);
 	all_paths = ft_get_paths(envp);
 	child = malloc(sizeof(pid_t) * (argc - 3));
-	end = malloc(sizeof(int) * (info.size * 2 - 1));
+	end = malloc(sizeof(int) * ((info.size) * 2));
 	i = 0;
-	while (i < info.size - 1)
+	while (i < info.size)
 	{
-		pipe(end + i * 2);
+		if (i != info.size - 1)
+			pipe(end + i * 2);
 		child[i] = fork();
 		if (child[i] == 0)
 		{
-			if (i == 0)
-				info.in = info.fd1;
-			else
-				info.in = end[i];
-			info.out = end[i + 1];
-			if (i - 3 >= 0)
-				close(end[i - 3]);
+			pipex(&info, i * 2 + 1, end);
 			if (ft_execute_cmd(info, i, all_paths, envp) == 1)
 				ft_error(info, i);
-			close(info.fd1);
-    		close(end[i + 1]);
+			close(info.in);
+			close(info.out);
 			return (0);
 		}
-		child[i + 1] = fork();
-		if (child[i + 1] == 0)
+		//printf("%d\n", waitpid(child[i], &status, 0));
+		//close(end[i * 2]);
+		if (i > 0)
 		{
-			info.in = end[i];
-			if (i == info.size - 2)
-				info.out = info.fd2;
-			else
-				info.out = end[i + 3];
-    		close(end[i + 1]);
-			if (ft_execute_cmd(info, i, all_paths, envp) == 1)
-				ft_error(info, i);
-			close(info.fd2);
-			close(end[i]);
-			return (0);
+			close(end[i * 2 - 1]);
+			close(end[i * 2 + 1]);
 		}
+		else
+			close(info.fd1);
+		//close(end[i * 2 + 1]);
 		i++;
+		if (i == info.size)
+			close(info.fd2);
 	}
-	while (i < info.size - 1)
-	{
-		waitpid(child[i], &status, 0);
-		i++;
-	}
+	i = 0;
+	// while (i < info.size  * 2)
+	// {
+	// 	close(end[i]);
+	// 	i++;
+	// }
+	i = 0;
+	 while (i < info.size)
+	 {
+	 	ft_putstr_fd("aad\n", 1);
+	 	waitpid(child[i], &status, 0);
+	 	i++;
+	 }
+	close(info.fd1);
+	close(info.fd2);
 	free(child);
 	free(end);
 	free(info.cmds);
