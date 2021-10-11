@@ -1,36 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fill_info.c                                     :+:      :+:    :+:   */
+/*   ft_open_files.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/11 13:41:41 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/11 21:40:27 by mslyther         ###   ########.fr       */
+/*   Created: 2021/10/11 13:50:58 by mslyther          #+#    #+#             */
+/*   Updated: 2021/10/11 15:36:17 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <pipex.h>
 
-void	ft_fill_info(t_info *info, char **argv, int argc, int flag)
+int	ft_open_files(t_info *info, int argc, char **argv)
 {
-	int	i;
-
-	if (flag)
-		info->size = argc - 4;
-	else
-		info->size = argc - 3;
-	info->cmds = malloc(sizeof(char *) * (info->size + 1));
-	i = 0;
-	while (i < info->size)
-	{
-		info->cmds[i] = argv[i + 2];
-		i++;
-	}
-	info->cmds[i] = NULL;
-	info->limiter = NULL;
-	info->in = 0;
-	info->out = 0;
-	if (flag)
-		info->limiter = argv[1];
+	info->fd1 = open(argv[1], O_RDONLY);
+	if (info->fd1 < 0)
+		perror(argv[1]);
+	info->fd2 = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (info->fd2 < 0)
+		perror(argv[argc - 1]);
+	return (0);
 }

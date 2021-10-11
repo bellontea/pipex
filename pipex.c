@@ -1,22 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/11 13:42:19 by mslyther          #+#    #+#             */
+/*   Updated: 2021/10/11 22:51:32 by mslyther         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <pipex.h>
-
-void free_array(char **array)
-{
-	int i;
-
-	i = 0;
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
-}
 
 char	**ft_get_paths(char **envp)
 {
-	int i;
-	char **all_paths;
+	int		i;
+	char	**all_paths;
 	char	*temp;
 
 	i = 0;
@@ -34,9 +33,9 @@ char	**ft_get_paths(char **envp)
 	return (all_paths);
 }
 
-int ft_parse_cmd(char **cmd, char **all_paths)
+int	ft_parse_cmd(char **cmd, char **all_paths)
 {
-	int 	i;
+	int		i;
 	char	*full_cmd;
 
 	i = 0;
@@ -55,14 +54,15 @@ int ft_parse_cmd(char **cmd, char **all_paths)
 	return (1);
 }
 
-int ft_execute_cmd(t_info info, int i, char **all_paths, char **envp)
+int	ft_execute_cmd(t_info info, int i, char **all_paths, char **envp)
 {
 	char	**cmd_splitted;
 
 	cmd_splitted = ft_split(info.cmds[i], ' ');
-	if (access(cmd_splitted[0], F_OK) && ft_parse_cmd(&(cmd_splitted[0]), all_paths))
+	if (access(cmd_splitted[0], F_OK)
+		&& ft_parse_cmd(&(cmd_splitted[0]), all_paths))
 	{
-		free_array(cmd_splitted);
+		ft_free_array(cmd_splitted);
 		return (1);
 	}
 	dup2(info.in, 0);
@@ -72,30 +72,11 @@ int ft_execute_cmd(t_info info, int i, char **all_paths, char **envp)
 		if (execve(cmd_splitted[0], cmd_splitted, envp))
 			perror(cmd_splitted[0]);
 	}
-	free_array(cmd_splitted);
+	ft_free_array(cmd_splitted);
 	return (0);
 }
 
-void	ft_error(t_info info, int i)
-{
-	ft_putstr_fd(PROGRAM_NAME, 2);
-	ft_putstr_fd(": command not found: ", 2);
-	ft_putstr_fd(info.cmds[i], 2);
-	ft_putstr_fd("\n", 2);
-}
-
-int ft_open_files(t_info *info, int argc, char **argv)
-{
-	info->fd1 = open(argv[1], O_RDONLY);
-	if (info->fd1 < 0)
-		perror(argv[1]);
-	info->fd2 = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
-	if (info->fd2 < 0)
-		perror(argv[argc - 1]);
-	return (0);
-}
-
-void pipex(t_info *info, int i, int *end)
+void	ft_define_fds(t_info *info, int i, int *end)
 {
 	if (i - 3 < 0)
 		info->in = info->fd1;
@@ -107,26 +88,67 @@ void pipex(t_info *info, int i, int *end)
 		info->out = end[i];
 	if (i - 2 >= 0)
 		close(end[i - 2]);
-	if ((i - 1) / 2 < info->size - 1)
-		close(end[i - 1]);
+	close(end[i - 1]);
 }
 
-int	main(int argc, char **argv, char **envp)
+void	ft_close(int *end, t_info info, int i)
 {
-	int	*end;
-	t_info	info;
-	pid_t	*child;
-	char	**all_paths;
-	int status;
-	int i;
+	if (i == 0)
+		close(info.fd1);
+	else
+	{
+		close(end[i * 2 - 1]);
+		close(end[i * 2 - 2]);
+	}
+	if (i == info.size - 1)
+		close(info.fd2);
+}
 
-	status = 0;
-	ft_open_files(&info, argc, argv);
-	ft_fill_info(&info, argv, argc);
-	all_paths = ft_get_paths(envp);
-	child = malloc(sizeof(pid_t) * (argc - 3));
-	end = malloc(sizeof(int) * ((info.size) * 2));
+void	ft_wait(pid_t *child, int size)
+{
+	int	i;
+	int	status;
+
 	i = 0;
+	status = 0;
+	while (i < size)
+	{
+		waitpid(child[i], &status, 0);
+		i++;
+	}
+}
+
+void	ft_here_doc(t_info *info, int *end)
+{
+	char	*line;
+	int		len;
+
+	line = NULL;
+	info->fd1 = end[1];
+	// close(end[0]);
+	len = ft_strlen(info->limiter);
+	line = get_next_line(0);
+	while ((ft_strncmp(info->limiter, line, len) != 0) || (line[len] != '\n'))
+	{
+		free(line);
+		line = get_next_line(0);
+		write(info->fd1, line, ft_strlen(line));
+	}
+	close(info->fd1);
+	free(line);
+}
+
+void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths, char **envp)
+{
+	int	i;
+	int	in[2];
+
+	i = 0;
+	if (info.limiter)
+	{
+		pipe(in);
+		ft_here_doc(&info, in);
+	}
 	while (i < info.size)
 	{
 		if (i != info.size - 1)
@@ -134,45 +156,48 @@ int	main(int argc, char **argv, char **envp)
 		child[i] = fork();
 		if (child[i] == 0)
 		{
-			pipex(&info, i * 2 + 1, end);
+			ft_define_fds(&info, i * 2 + 1, end);
 			if (ft_execute_cmd(info, i, all_paths, envp) == 1)
 				ft_error(info, i);
 			close(info.in);
 			close(info.out);
-			return (0);
+			exit(0);
 		}
-		//printf("%d\n", waitpid(child[i], &status, 0));
-		//close(end[i * 2]);
-		if (i > 0)
-		{
-			close(end[i * 2 - 1]);
-			close(end[i * 2 - 2]);
-		}
-		else
-			close(info.fd1);
-		//close(end[i * 2 + 1]);
+		ft_close(end, info, i);
 		i++;
-		if (i == info.size)
-			close(info.fd2);
 	}
-	i = 0;
-	// while (i < info.size  * 2)
-	// {
-	// 	close(end[i]);
-	// 	i++;
-	// }
-	i = 0;
-	 while (i < info.size)
-	 {
-	 	ft_putstr_fd("aad\n", 1);
-	 	waitpid(child[i], &status, 0);
-	 	i++;
-	 }
-	close(info.fd1);
-	close(info.fd2);
+}
+
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_info	info;
+	int		*end;
+	pid_t	*child;
+	char	**all_paths;
+
+	//if (argc != 5)
+	//	return (1);
+	if (ft_strncmp("here_doc", argv[1], ft_strlen("here_doc")) == 0)
+	{
+		info.fd2 = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (info.fd2 < 0)
+			perror(argv[argc - 1]);
+		ft_fill_info(&info, argv + 1, argc, 1);
+	}
+	else
+	{
+		ft_open_files(&info, argc, argv);
+		ft_fill_info(&info, argv, argc, 0);
+	}
+	all_paths = ft_get_paths(envp);
+	child = malloc(sizeof(pid_t) * (argc - 3));
+	end = malloc(sizeof(int) * ((info.size - 1) * 2));
+	ft_pipex(info, end, child, all_paths, envp);
+	ft_wait(child, info.size);
 	free(child);
 	free(end);
 	free(info.cmds);
-	free_array(all_paths);
+	ft_free_array(all_paths);
 	return (0);
 }

@@ -1,36 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fill_info.c                                     :+:      :+:    :+:   */
+/*   ft_free_array.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/11 13:41:41 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/11 21:40:27 by mslyther         ###   ########.fr       */
+/*   Created: 2021/10/11 13:44:08 by mslyther          #+#    #+#             */
+/*   Updated: 2021/10/11 13:44:25 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <pipex.h>
 
-void	ft_fill_info(t_info *info, char **argv, int argc, int flag)
+void	ft_free_array(char **array)
 {
 	int	i;
 
-	if (flag)
-		info->size = argc - 4;
-	else
-		info->size = argc - 3;
-	info->cmds = malloc(sizeof(char *) * (info->size + 1));
 	i = 0;
-	while (i < info->size)
+	while (array[i])
 	{
-		info->cmds[i] = argv[i + 2];
+		free(array[i]);
 		i++;
 	}
-	info->cmds[i] = NULL;
-	info->limiter = NULL;
-	info->in = 0;
-	info->out = 0;
-	if (flag)
-		info->limiter = argv[1];
+	free(array);
 }

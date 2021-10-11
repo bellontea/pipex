@@ -1,36 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fill_info.c                                     :+:      :+:    :+:   */
+/*   ft_error.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/11 13:41:41 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/11 21:40:27 by mslyther         ###   ########.fr       */
+/*   Created: 2021/10/11 13:49:42 by mslyther          #+#    #+#             */
+/*   Updated: 2021/10/11 13:49:59 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <pipex.h>
 
-void	ft_fill_info(t_info *info, char **argv, int argc, int flag)
+void	ft_error(t_info info, int i)
 {
-	int	i;
-
-	if (flag)
-		info->size = argc - 4;
-	else
-		info->size = argc - 3;
-	info->cmds = malloc(sizeof(char *) * (info->size + 1));
-	i = 0;
-	while (i < info->size)
-	{
-		info->cmds[i] = argv[i + 2];
-		i++;
-	}
-	info->cmds[i] = NULL;
-	info->limiter = NULL;
-	info->in = 0;
-	info->out = 0;
-	if (flag)
-		info->limiter = argv[1];
+	ft_putstr_fd(PROGRAM_NAME, 2);
+	ft_putstr_fd(": command not found: ", 2);
+	ft_putstr_fd(info.cmds[i], 2);
+	ft_putstr_fd("\n", 2);
 }
