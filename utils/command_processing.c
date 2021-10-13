@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 19:58:11 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 16:52:21 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/13 20:35:04 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ int	ft_parse_cmd(char **cmd, char **all_paths)
 	int		i;
 	char	*full_cmd;
 
+	if ((cmd[0][0] == '/' || (cmd[0][0] == '.' && cmd[0][1] == '/'))
+		&& !access(cmd[0], F_OK))
+		return (0);
 	i = 0;
 	while (all_paths[i])
 	{
@@ -59,8 +62,7 @@ int	ft_execute_cmd(t_info info, int i, char **all_paths)
 	char	**cmd_splitted;
 
 	cmd_splitted = ft_split(info.cmds[i], ' ');
-	if (access(cmd_splitted[0], F_OK)
-		&& ft_parse_cmd(cmd_splitted, all_paths))
+	if (ft_parse_cmd(cmd_splitted, all_paths))
 	{
 		ft_free_array(cmd_splitted);
 		return (1);

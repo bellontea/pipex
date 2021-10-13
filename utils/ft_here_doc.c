@@ -1,33 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_fill_info.c                                     :+:      :+:    :+:   */
+/*   ft_here_doc.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/11 13:41:41 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:35:14 by mslyther         ###   ########.fr       */
+/*   Created: 2021/10/13 19:37:34 by mslyther          #+#    #+#             */
+/*   Updated: 2021/10/13 20:35:06 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <pipex.h>
 
-void	ft_fill_info(t_info *info, char **argv, int argc, int flag)
+void	ft_here_doc(t_info *info, int *end)
 {
-	int	i;
+	char	*line;
+	int		len;
 
-	info->size = argc - 3;
-	info->cmds = malloc(sizeof(char *) * (info->size + 1));
-	i = 0;
-	while (i < info->size)
+	line = NULL;
+	info->fd1 = end[1];
+	close(end[0]);
+	len = ft_strlen(info->limiter);
+	line = get_next_line(0);
+	while (line)
 	{
-		info->cmds[i] = argv[i + 2];
-		i++;
+		if ((ft_strncmp(info->limiter, line, len) == 0) && (line[len] == '\n'))
+			break ;
+		write(info->fd1, line, ft_strlen(line));
+		free(line);
+		line = get_next_line(0);
 	}
-	info->cmds[i] = NULL;
-	info->limiter = NULL;
-	info->in = 0;
-	info->out = 0;
-	if (flag)
-		info->limiter = info->cmds[0];
+	close(info->fd1);
+	if (line)
+		free(line);
 }

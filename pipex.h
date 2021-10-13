@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:44:57 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/12 20:18:48 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/13 20:34:54 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ int		ft_execute_cmd(t_info info, int i, char **all_paths);
 void	ft_define_fds(t_info *info, int i, int *end);
 void	ft_close(int *end, t_info info, int i);
 void	ft_wait(pid_t *child, int size);
-void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths);
 void	ft_here_doc(t_info *info, int *end);
+void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths);
+void	ft_execute_child(t_info *info, int i, int *end, char **all_paths);
 
 #endif

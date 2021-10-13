@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:42:19 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/12 21:38:17 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/13 20:34:46 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	main(int argc, char **argv, char **envp)
 	pid_t	*child;
 	char	**all_paths;
 
-	if (argc < 5)
+	if (argc != 5)
 		return (1);
 	info.envp = envp;
 	ft_open_files(&info, argc, argv);

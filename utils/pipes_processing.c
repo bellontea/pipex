@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 20:01:17 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 17:09:34 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/13 20:34:51 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	ft_close(int *end, t_info info, int i)
 {
 	if (i == 0)
 	{
-		if (info.fd1 != -1) 
+		if (info.fd1 != -1)
 			close(info.fd1);
 	}	
 	else
@@ -53,32 +53,25 @@ void	ft_wait(pid_t *child, int size)
 	status = 0;
 	while (i < size)
 	{
-		waitpid(child[i], &status, 0);
+		if (child[i] != -2)
+			waitpid(child[i], &status, 0);
 		i++;
 	}
 }
 
-void	ft_here_doc(t_info *info, int *end)
+void	ft_execute_child(t_info *info, int i, int *end, char **all_paths)
 {
-	char	*line;
-	int		len;
-
-	line = NULL;
-	info->fd1 = end[1];
-	close(end[0]);
-	len = ft_strlen(info->limiter);
-	line = get_next_line(0);
-	while (line)
+	if (i == 0 && info->limiter)
 	{
-		if ((ft_strncmp(info->limiter, line, len) == 0) && (line[len] == '\n'))
-			break ;
-		write(info->fd1, line, ft_strlen(line));
-		free(line);
-		line = get_next_line(0);
+		ft_here_doc(info, end);
+		exit(0);
 	}
-	close(info->fd1);
-	if (line)
-		free(line);
+	ft_define_fds(info, i * 2 + 1, end);
+	if (ft_execute_cmd(*info, i, all_paths) == 1)
+		ft_error(*info, i);
+	close(info->in);
+	close(info->out);
+	exit(0);
 }
 
 void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
@@ -90,27 +83,20 @@ void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
 	{
 		if (i != info.size - 1)
 			pipe(end + i * 2);
+		child[i] = -2;
 		if (info.fd1 == -1)
 		{
 			i++;
 			continue ;
 		}
 		child[i] = fork();
-		if (child[i] == 0)
+		if (child[i] == -1)
 		{
-			if (i == 0 && info.limiter)
-			{
-				ft_here_doc(&info, end);
-				exit(0);
-			}
-			ft_define_fds(&info, i * 2 + 1, end);
-			if (ft_execute_cmd(info, i, all_paths) == 1)
-				ft_error(info, i);
-			if (info.in != -1)
-				close(info.in);
-			if (info.out != -1)
-				close(info.out);
+			perror("fork");
+			exit(1);
 		}
+		if (child[i] == 0)
+			ft_execute_child(&info, i, end, all_paths);
 		ft_close(end, info, i);
 		i++;
 	}
