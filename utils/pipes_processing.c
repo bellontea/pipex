@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 20:01:17 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/12 22:49:27 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/13 17:09:34 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,23 @@ void	ft_define_fds(t_info *info, int i, int *end)
 		info->out = end[i];
 	if (i - 2 >= 0)
 		close(end[i - 2]);
-	close(end[i - 1]);
+	if ((i - 1) / 2 != info->size - 1)
+		close(end[i - 1]);
 }
 
 void	ft_close(int *end, t_info info, int i)
 {
 	if (i == 0)
-		close(info.fd1);
+	{
+		if (info.fd1 != -1) 
+			close(info.fd1);
+	}	
 	else
 	{
 		close(end[i * 2 - 1]);
 		close(end[i * 2 - 2]);
 	}
-	if (i == info.size - 1)
+	if (i == info.size - 1 && info.fd2 != -1)
 		close(info.fd2);
 }
 
@@ -86,6 +90,11 @@ void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
 	{
 		if (i != info.size - 1)
 			pipe(end + i * 2);
+		if (info.fd1 == -1)
+		{
+			i++;
+			continue ;
+		}
 		child[i] = fork();
 		if (child[i] == 0)
 		{
@@ -97,8 +106,10 @@ void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
 			ft_define_fds(&info, i * 2 + 1, end);
 			if (ft_execute_cmd(info, i, all_paths) == 1)
 				ft_error(info, i);
-			close(info.in);
-			close(info.out);
+			if (info.in != -1)
+				close(info.in);
+			if (info.out != -1)
+				close(info.out);
 		}
 		ft_close(end, info, i);
 		i++;
