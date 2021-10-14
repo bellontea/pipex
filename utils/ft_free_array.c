@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:44:08 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/11 13:44:25 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:08:23 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 void	ft_free_array(char **array)
 {

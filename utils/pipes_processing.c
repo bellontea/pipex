@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 20:01:17 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:34:51 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:31:07 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 void	ft_define_fds(t_info *info, int i, int *end)
 {
@@ -84,7 +84,7 @@ void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
 		if (i != info.size - 1)
 			pipe(end + i * 2);
 		child[i] = -2;
-		if (info.fd1 == -1)
+		if (info.fd1 == -1 && !info.limiter)
 		{
 			i++;
 			continue ;

@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:41:41 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:35:14 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:28:57 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 void	ft_fill_info(t_info *info, char **argv, int argc, int flag)
 {

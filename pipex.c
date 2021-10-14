@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:42:19 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:34:46 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:08:52 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 int	main(int argc, char **argv, char **envp)
 {

@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/11 13:50:58 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/12 22:02:22 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:08:18 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 int	ft_open_files(t_info *info, int argc, char **argv)
 {

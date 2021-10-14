@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/13 19:37:34 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:35:06 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:21:34 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 void	ft_here_doc(t_info *info, int *end)
 {
@@ -21,15 +21,18 @@ void	ft_here_doc(t_info *info, int *end)
 	info->fd1 = end[1];
 	close(end[0]);
 	len = ft_strlen(info->limiter);
+	ft_putstr_fd("> ", 1);
 	line = get_next_line(0);
 	while (line)
 	{
 		if ((ft_strncmp(info->limiter, line, len) == 0) && (line[len] == '\n'))
 			break ;
 		write(info->fd1, line, ft_strlen(line));
+		ft_putstr_fd("> ", 1);
 		free(line);
 		line = get_next_line(0);
 	}
+	close(0);
 	close(info->fd1);
 	if (line)
 		free(line);

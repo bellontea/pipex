@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 19:58:11 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:35:04 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:08:32 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 char	**ft_get_paths(char **envp)
 {

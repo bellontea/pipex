@@ -6,11 +6,11 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 19:52:08 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/13 20:34:52 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:31:42 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <pipex.h>
+#include "pipex.h"
 
 void	ft_open_file2(t_info *info, char **argv, int argc, int *flag)
 {
@@ -18,6 +18,7 @@ void	ft_open_file2(t_info *info, char **argv, int argc, int *flag)
 	if (info->fd2 < 0)
 		perror(argv[argc - 1]);
 	*flag = 1;
+	info->fd1 = -1;
 }
 
 int	main(int argc, char **argv, char **envp)
