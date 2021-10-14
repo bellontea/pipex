@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/13 19:37:34 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/14 16:21:34 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 17:08:55 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void	ft_here_doc(t_info *info, int *end)
 		free(line);
 		line = get_next_line(0);
 	}
-	close(0);
 	close(info->fd1);
 	if (line)
 		free(line);

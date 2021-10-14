@@ -6,7 +6,7 @@
 /*   By: mslyther <mslyther@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 20:01:17 by mslyther          #+#    #+#             */
-/*   Updated: 2021/10/14 16:31:07 by mslyther         ###   ########.fr       */
+/*   Updated: 2021/10/14 17:11:25 by mslyther         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
 		if (i != info.size - 1)
 			pipe(end + i * 2);
 		child[i] = -2;
-		if (info.fd1 == -1 && !info.limiter)
+		if (i == 0 && info.fd1 == -1 && !info.limiter)
 		{
 			i++;
 			continue ;
@@ -97,7 +97,8 @@ void	ft_pipex(t_info info, int *end, pid_t *child, char **all_paths)
 		}
 		if (child[i] == 0)
 			ft_execute_child(&info, i, end, all_paths);
-		ft_close(end, info, i);
-		i++;
+		if (i == 0 && info.limiter)
+			wait(NULL);
+		ft_close(end, info, i++);
 	}
 }
